@@ -1,0 +1,46 @@
+//
+//  ContentView.swift
+//  GhibliSwiftUIApp
+//
+//  Created by Yogita on 02.01.26.
+//
+
+import SwiftUI
+import SwiftData
+
+struct ContentView: View {
+    
+    @State private var filmsViewModel = FilmsViewModel()
+    @State private var favoritesViewModel = FavoritesViewModel()
+    
+    var body: some View {
+        TabView {
+            Tab("Movies", systemImage: "movieclapper") {
+                FilmsScreen(filmsViewModel: filmsViewModel,
+                            favoritesViewModel: favoritesViewModel)
+            }
+            
+            Tab("Favorites", systemImage: "heart") {
+                FavoritesScreen(filmsViewModel: filmsViewModel,
+                                favoritesViewModel: favoritesViewModel)
+            }
+            
+            Tab("Settings", systemImage: "gear") {
+                SettingsScreen()
+            }
+            
+            Tab(role: .search) {
+                SearchScreen(favoritesViewModel: favoritesViewModel)
+            }
+        }
+        .task {
+            favoritesViewModel.load()
+            await filmsViewModel.fetch()
+        }
+        .setAppearanceTheme()
+    }
+}
+
+#Preview {
+    ContentView()
+}
